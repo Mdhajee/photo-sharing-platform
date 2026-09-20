@@ -1,4 +1,8 @@
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextResponse } from "next/server";
+
+import { s3Bucket, s3Client } from "@/lib/storage/s3";
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/auth/session";
@@ -84,8 +88,34 @@ export async function GET(
       },
     });
 
+    const photosWithUrls = await Promise.all(
+      photos.map(async (photo) => {
+        const command = new GetObjectCommand({
+          Bucket: s3Bucket,
+          Key: photo.storageLocation,
+        });
+
+        const url = await getSignedUrl(s3Client, command, {
+          expiresIn: 60 * 10,
+        });
+
+        return {
+          id: photo.id,
+          eventId: photo.eventId,
+          uploadedById: photo.uploadedById,
+          filename: photo.filename,
+          storageLocation: photo.storageLocation,
+          fileSize: photo.fileSize,
+          selectedForGallery: photo.selectedForGallery,
+          createdAt: photo.createdAt,
+          uploadedBy: photo.uploadedBy,
+          url,
+        };
+      }),
+    );
+
     return NextResponse.json({
-      photos,
+      photos: photosWithUrls,
     });
   } catch {
     return NextResponse.json(

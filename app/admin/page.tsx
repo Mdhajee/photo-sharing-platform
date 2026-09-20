@@ -31,6 +31,7 @@ type Photo = {
     name: string;
     email: string;
   };
+  url: string;
 };
 
 type Gallery = {
@@ -840,6 +841,11 @@ async function handleGalleryPublish(published: boolean) {
                       key={photo.id}
                       className="rounded border border-gray-200 p-4"
                     >
+                      <img
+                        src={photo.url}
+                        alt={photo.filename}
+                        className="mb-4 max-h-96 w-full rounded object-contain"
+                      />
                       <div className="mb-3">
                         <p className="font-medium">
                           {photo.filename}
