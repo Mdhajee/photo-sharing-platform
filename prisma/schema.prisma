@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  TEAM_MEMBER
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role
+  createdAt    DateTime @default(now())
+
+  createdEvents Event[]       @relation("EventCreator")
+  memberships   EventMember[]
+  photos        Photo[]       @relation("PhotoUploader")
+  sessions      Session[]
+}
+
+model Event {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+
+  createdById Int
+  createdBy   User @relation("EventCreator", fields: [createdById], references: [id])
+
+  members EventMember[]
+  photos  Photo[]
+  gallery Gallery?
+}
+
+model EventMember {
+  id        Int      @id @default(autoincrement())
+  eventId   Int
+  userId    Int
+  createdAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+}
+
+model Photo {
+  id                 Int      @id @default(autoincrement())
+  eventId            Int
+  uploadedById       Int
+  filename           String
+  storageLocation    String
+  fileSize           Int
+  selectedForGallery Boolean  @default(false)
+  createdAt          DateTime @default(now())
+
+  event      Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  uploadedBy User  @relation("PhotoUploader", fields: [uploadedById], references: [id])
+}
+
+model Gallery {
+  id          Int       @id @default(autoincrement())
+  eventId     Int       @unique
+  slug        String    @unique
+  pinHash     String
+  published   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  publishedAt DateTime?
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
