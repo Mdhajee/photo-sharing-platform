@@ -205,7 +205,8 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-5xl px-4 py-8">
-        <header className="mb-8">
+        <header className="mb-8 flex items-center justify-between">
+          <div>
           <h1 className="text-3xl font-bold">
             Team Member Dashboard
           </h1>
@@ -217,6 +218,7 @@ export default function DashboardPage() {
           <p className="text-sm text-gray-500">
             {user.email}
           </p>
+          </div>
 
           <button
             type="button"
