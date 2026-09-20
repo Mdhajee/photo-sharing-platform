@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/auth/session";
 import { requireRole } from "@/lib/auth/authorization";
 import { hashPassword } from "@/lib/auth/password";
-import { Role } from "@/app/generated/prisma/client";
+import { Role } from "@/generated/prisma/client";
 
 type RouteContext = {
   params: Promise<{

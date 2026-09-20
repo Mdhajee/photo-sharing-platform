@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentSession } from "@/lib/auth/session";
 import { requireRole } from "@/lib/auth/authorization";
-import { Role } from "@/app/generated/prisma/client";
+import { Role } from "@/generated/prisma/client";
 import { s3Bucket, s3Client } from "@/lib/storage/s3";
 
 type RouteContext = {
